@@ -1,4 +1,4 @@
-package com.briak.mealsmenu.ui.theme
+package com.briak.mealsmenu.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

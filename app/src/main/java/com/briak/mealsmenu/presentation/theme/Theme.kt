@@ -1,4 +1,4 @@
-package com.briak.mealsmenu.ui.theme
+package com.briak.mealsmenu.presentation.theme
 
 import android.app.Activity
 import android.os.Build
