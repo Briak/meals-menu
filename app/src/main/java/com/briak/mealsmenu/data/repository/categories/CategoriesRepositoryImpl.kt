@@ -5,13 +5,13 @@ import com.briak.mealsmenu.domain.categories.CategoriesRepository
 import com.briak.mealsmenu.domain.categories.CategoryModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class CategoriesRepositoryImpl(
     private val api: MealsAPI,
-): CategoriesRepository {
-
+) : CategoriesRepository {
     private val categoriesFlow = MutableStateFlow<List<CategoryModel>>(listOf())
     private val categoriesMutex = Mutex()
 
@@ -19,10 +19,22 @@ class CategoriesRepositoryImpl(
         val response = api.getCategories()
         val dtos = response.categories
         val models = dtos.map { dto -> CategoriesMapper.mapFromDto(dto) }
-        categoriesMutex.withLock { categoriesFlow.emit(models) }
+        categoriesFlow.emit(models)
         return models
     }
 
-    override fun observe(): Flow<List<CategoryModel>> = categoriesFlow
+    override fun observe(): Flow<List<CategoryModel>> =
+        categoriesFlow
+            .onStart {
+                runCatching {
+                    reloadIfEmpty()
+                }
+            }
 
+    private suspend fun reloadIfEmpty() =
+        categoriesMutex.withLock {
+            if (categoriesFlow.value.isEmpty()) {
+                get()
+            }
+        }
 }

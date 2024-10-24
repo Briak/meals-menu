@@ -14,10 +14,11 @@
         android:theme="@style/Theme.MealsMenu"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.screens.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MealsMenu">
+            android:theme="@style/Theme.MealsMenu"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

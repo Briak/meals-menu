@@ -2,6 +2,7 @@ package com.briak.mealsmenu.data.repository.meals
 
 import com.briak.mealsmenu.data.network.MealsAPI
 import com.briak.mealsmenu.domain.meals.MealModel
+import com.briak.mealsmenu.domain.meals.MealNotFoundException
 import com.briak.mealsmenu.domain.meals.MealsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,6 @@ import kotlinx.coroutines.sync.withLock
 class MealsRepositoryImpl(
     private val api: MealsAPI,
 ) : MealsRepository {
-
     private val currentMealFlow = MutableStateFlow<MealModel?>(null)
     private val currentMealMutex = Mutex()
 
@@ -23,14 +23,16 @@ class MealsRepositoryImpl(
 
     override suspend fun getDetails(mealId: String): MealModel {
         val response = api.getMealDetails(mealId)
-        val dto = response.meals.firstOrNull() ?: throw RuntimeException("Meal isn't found")
+        val dto = response.meals.firstOrNull() ?: throw MealNotFoundException()
         return MealsMapper.mapMealFromDto(dto)
     }
 
-    override suspend fun putCurrent(mealModel: MealModel) = currentMealMutex.withLock {
-        currentMealFlow.emit(mealModel)
-    }
+    override suspend fun putCurrent(mealModel: MealModel) =
+        currentMealMutex.withLock {
+            currentMealFlow.emit(mealModel)
+        }
 
     override fun observeCurrent(): Flow<MealModel?> = currentMealFlow
 
+    override suspend fun getCurrent(): MealModel? = currentMealFlow.value
 }

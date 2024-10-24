@@ -5,9 +5,7 @@ import kotlinx.coroutines.flow.Flow
 class MealsInteractor(
     private val mealsRepository: MealsRepository,
 ) {
-
-    suspend fun getMealsForCategory(categoryName: String): List<MealModel> =
-        mealsRepository.getForCategory(categoryName)
+    suspend fun getMealsForCategory(categoryName: String): List<MealModel> = mealsRepository.getForCategory(categoryName)
 
     suspend fun getMealDetails(mealId: String): MealModel = mealsRepository.getDetails(mealId)
 
@@ -15,4 +13,5 @@ class MealsInteractor(
 
     fun observeCurrentMeal(): Flow<MealModel?> = mealsRepository.observeCurrent()
 
+    suspend fun getCurrentMeal(): MealModel? = mealsRepository.getCurrent()
 }

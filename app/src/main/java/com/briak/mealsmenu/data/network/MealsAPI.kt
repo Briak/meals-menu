@@ -3,20 +3,19 @@ package com.briak.mealsmenu.data.network
 import com.briak.mealsmenu.data.network.response.CategoriesResponse
 import com.briak.mealsmenu.data.network.response.MealsResponse
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface MealsAPI {
-
     @GET("v1/1/categories.php")
     suspend fun getCategories(): CategoriesResponse
 
-    @GET("v1/1/filter.php?c={category_name}")
+    @GET("v1/1/filter.php")
     suspend fun getCategoryMeals(
-        @Path("category_name") categoryName: String,
+        @Query("c") categoryName: String,
     ): MealsResponse
 
-    @GET("v1/1/lookup.php?i={meal_id}")
+    @GET("v1/1/lookup.php")
     suspend fun getMealDetails(
-        @Path("meal_id") mealId: String,
+        @Query("i") mealId: String,
     ): MealsResponse
 }
