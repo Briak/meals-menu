@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -56,6 +55,8 @@ import coil.request.ImageRequest
 import com.briak.mealsmenu.R
 import com.briak.mealsmenu.domain.meals.MealModel
 import com.briak.mealsmenu.presentation.common.message.ErrorUiModel
+import com.briak.mealsmenu.presentation.components.ErrorEvents
+import com.briak.mealsmenu.presentation.components.ErrorFull
 import com.briak.mealsmenu.presentation.navigation.NavigationEvents
 import com.briak.mealsmenu.presentation.screens.mealdetails.ingredients.IngredientItem
 import com.briak.mealsmenu.presentation.screens.overview.meals.MealFullPreviewData
@@ -87,6 +88,13 @@ fun MealDetailsScreen(
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
     }
+
+    val eventHandler =
+        remember {
+            object : MealDetailsScreenEvent {
+                override fun onErrorReloadClicked() = viewModel.reload()
+            }
+        }
 
     Scaffold(
         topBar = {
@@ -135,7 +143,7 @@ fun MealDetailsScreen(
             if (contentUiModel != null) {
                 when {
                     contentUiModel.loading -> MealDetailsLoader()
-                    contentUiModel.error != null -> MealError(contentUiModel.error) { viewModel.reload() }
+                    contentUiModel.error != null -> ErrorFull(Modifier, contentUiModel.error, eventHandler)
                     else ->
                         MealDetailsContent(
                             sharedTransitionScope = sharedTransitionScope,
@@ -148,6 +156,8 @@ fun MealDetailsScreen(
     }
 }
 
+interface MealDetailsScreenEvent : ErrorEvents
+
 @Composable
 fun MealDetailsLoader() {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -158,28 +168,6 @@ fun MealDetailsLoader() {
                     .size(24.dp),
             color = MaterialTheme.colorScheme.secondary,
         )
-    }
-}
-
-@Composable
-fun MealError(
-    error: ErrorUiModel,
-    onReloadClick: () -> Unit,
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.safeContentPadding(),
-        ) {
-            item {
-                val message = error.messageText(LocalContext.current)
-                if (message != null) Text(text = message, color = MaterialTheme.colorScheme.primary)
-            }
-            item {
-                TextButton(onClick = onReloadClick) {
-                    Text(text = stringResource(id = R.string.MEAL_DETAILS_SCREEN_RELOAD_BUTTON))
-                }
-            }
-        }
     }
 }
 

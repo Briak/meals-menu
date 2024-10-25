@@ -30,18 +30,15 @@ class OverviewViewModel(
             .onEach { models ->
                 if (stateFlow.value.categoryModels != null) return@onEach
                 val state =
-                    stateFlow.updateAndGet { it.copy(categoryModels = models, loading = false) }
+                    stateFlow.updateAndGet { it.copy(categoryModels = models) }
                 selectCategory(state.uiModel.categories.getOrNull(0))
             }.catch { error ->
-                stateFlow.update { state -> state.copy(loading = false, categoriesError = error) }
+                stateFlow.update { state -> state.copy(loading = false, error = error) }
             }.launchAndManageJob()
     }
 
     fun unsubscribe() {
         disposeJobs()
-    }
-
-    fun reloadCategories() {
     }
 
     fun selectCategory(category: CategoryUiModel?) =
@@ -54,21 +51,28 @@ class OverviewViewModel(
                     state.copy(
                         selectedCategoryId = category.id,
                         meals = emptyList(),
-                        mealsLoading = true,
+                        loading = true,
                     )
                 }
                 selectCategoryMutex.withLock {
-                    // handle errors
                     val meals = mealsInteractor.getMealsForCategory(category.name)
-                    stateFlow.update { state -> state.copy(meals = meals, mealsLoading = false) }
+                    stateFlow.update { state -> state.copy(meals = meals, loading = false) }
                 }
             } catch (error: Throwable) {
-                stateFlow.update { state -> state.copy(mealsLoading = false, mealsError = error) }
+                stateFlow.update { state -> state.copy(loading = false, error = error) }
             }
         }
 
-    fun reloadMeals() {
-    }
+    fun reload() =
+        launch {
+            try {
+                val oldState = stateFlow.value
+                stateFlow.update { state -> state.copy(error = null, loading = true) }
+                selectCategory(oldState.uiModel.categories.getOrNull(0))
+            } catch (error: Throwable) {
+                stateFlow.update { state -> state.copy(loading = false, error = error) }
+            }
+        }
 
     fun selectMeal(meal: MealUiModel) =
         launch {

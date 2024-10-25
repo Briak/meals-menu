@@ -8,9 +8,7 @@ data class OverviewState(
     val selectedCategoryId: String? = null,
     val meals: List<MealModel>? = null,
     val loading: Boolean = true,
-    val mealsLoading: Boolean = false,
-    val categoriesError: Throwable? = null,
-    val mealsError: Throwable? = null,
+    val error: Throwable? = null,
 ) {
     val uiModel: OverviewContentUiModel =
         kotlin.run {
@@ -19,9 +17,7 @@ data class OverviewState(
                 selectedCategoryId = selectedCategoryId ?: categoryModels?.getOrNull(0)?.id,
                 mealModels = meals ?: emptyList(),
                 loading = loading,
-                mealsLoading = mealsLoading,
-                categoriesError = categoriesError,
-                mealsError = mealsError,
+                error = error,
             )
         }
 }

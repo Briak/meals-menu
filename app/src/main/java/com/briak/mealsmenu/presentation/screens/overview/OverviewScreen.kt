@@ -50,6 +50,8 @@ import com.briak.mealsmenu.R
 import com.briak.mealsmenu.domain.categories.CategoryModel
 import com.briak.mealsmenu.domain.meals.MealModel
 import com.briak.mealsmenu.presentation.common.message.ErrorUiModel
+import com.briak.mealsmenu.presentation.components.ErrorEvents
+import com.briak.mealsmenu.presentation.components.ErrorFull
 import com.briak.mealsmenu.presentation.navigation.NavLink
 import com.briak.mealsmenu.presentation.navigation.NavigationEvents
 import com.briak.mealsmenu.presentation.screens.overview.categories.CategoryCard
@@ -96,6 +98,8 @@ fun OverviewScreen(
                     viewModel.selectMeal(uiModel)
                     events.navigate(NavLink.mealDetails())
                 }
+
+                override fun onErrorReloadClicked() = viewModel.reload()
             }
         }
 
@@ -131,7 +135,7 @@ fun OverviewScreen(
         ) {
             if (contentUiModel != null) {
                 when {
-                    contentUiModel.loading -> {
+                    contentUiModel.loading ->
                         Box(modifier = Modifier.fillMaxSize()) {
                             CircularProgressIndicator(
                                 modifier =
@@ -141,24 +145,21 @@ fun OverviewScreen(
                                 color = MaterialTheme.colorScheme.secondary,
                             )
                         }
-                    }
 
-                    contentUiModel.categoriesError != null -> {
-                        Text(text = "error")
-                        //                    ErrorFull(
-                        //                        modifier = Modifier,
-                        //                        events = eventHandler
-                        //                    )
-                    }
+                    contentUiModel.error != null ->
+                        ErrorFull(
+                            modifier = Modifier,
+                            errorUiModel = contentUiModel.error,
+                            events = eventHandler,
+                        )
 
-                    else -> {
+                    else ->
                         OverviewScreenContent(
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             uiModel = contentUiModel,
                             events = eventHandler,
                         )
-                    }
                 }
             }
         }
@@ -171,9 +172,7 @@ data class OverviewContentUiModel(
     val selectedCategoryId: String?,
     val meals: List<MealUiModel>,
     val loading: Boolean,
-    val mealsLoading: Boolean,
-    val categoriesError: ErrorUiModel?,
-    val mealsError: ErrorUiModel?,
+    val error: ErrorUiModel?,
 ) {
     companion object {
         fun create(
@@ -181,9 +180,7 @@ data class OverviewContentUiModel(
             selectedCategoryId: String?,
             mealModels: List<MealModel>,
             loading: Boolean,
-            mealsLoading: Boolean,
-            categoriesError: Throwable?,
-            mealsError: Throwable?,
+            error: Throwable?,
         ) = OverviewContentUiModel(
             categories =
                 categoryModels.mapIndexed { index, category ->
@@ -196,16 +193,15 @@ data class OverviewContentUiModel(
             selectedCategoryId = selectedCategoryId,
             meals = mealModels.mapNotNull { model -> MealUiModel.create(model) },
             loading = loading,
-            mealsLoading = mealsLoading,
-            categoriesError = if (categoriesError != null) ErrorUiModel(categoriesError) else null,
-            mealsError = if (mealsError != null) ErrorUiModel(mealsError) else null,
+            error = if (error != null) ErrorUiModel(error) else null,
         )
     }
 }
 
 interface OverviewScreenEvent :
     CategoryCardEvents,
-    MealCardEvents
+    MealCardEvents,
+    ErrorEvents
 
 @Composable
 private fun OverviewScreenContent(
@@ -255,7 +251,7 @@ fun MealsList(
     uiModel: OverviewContentUiModel,
     events: OverviewScreenEvent,
 ) {
-    if (uiModel.mealsLoading) { // TODO skeleton loading
+    if (uiModel.loading) { // TODO skeleton loading
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
                 modifier =
@@ -307,15 +303,15 @@ private fun OverviewScreenPreview() {
                             selectedCategoryId = "1",
                             meals = listOf(MealCardPreviewData.uiModel1, MealCardPreviewData.uiModel2),
                             loading = false,
-                            mealsLoading = false,
-                            categoriesError = null,
-                            mealsError = null,
+                            error = null,
                         ),
                     events =
                         object : OverviewScreenEvent {
                             override fun onCategoryCardClicked(uiModel: CategoryUiModel) = Unit
 
                             override fun onMealCardClicked(uiModel: MealUiModel) = Unit
+
+                            override fun onErrorReloadClicked() = Unit
                         },
                 )
             }

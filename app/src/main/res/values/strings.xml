@@ -7,12 +7,12 @@
     // Meal details screen
     <string name="MEAL_DETAILS_SCREEN_INGREDIENTS_LABEL">Ingredients</string>
     <string name="MEAL_DETAILS_SCREEN_INSTRUCTIONS_LABEL">Instructions</string>
-    <string name="MEAL_DETAILS_SCREEN_RELOAD_BUTTON">Reload</string>
     <string name="MEAL_DETAILS_NOT_FOUND_ERROR">Couldn\'t load recipe details, please try again later</string>
 
     // Errors
     <string name="GENERAL_ERROR_NO_CONNECTIVITY">Unfortunately you do not have an internet connection at the moment.</string>
     <string name="GENERAL_ERROR_UNEXPECTED">An unexpected error has occurred. $ERROR_MESSAGE$</string>
     <string name="GENERAL_ERROR_SERVER">A server error has occurred. $ERROR_MESSAGE$</string>
+    <string name="GENERAL_RELOAD">Reload</string>
 
 </resources>
