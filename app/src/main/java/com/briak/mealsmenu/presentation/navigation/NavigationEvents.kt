@@ -1,6 +1,13 @@
 package com.briak.mealsmenu.presentation.navigation
 
-interface NavigationEvents {
-    fun navigate(link: String)
-    fun back()
+import kotlinx.serialization.Serializable
+
+@Serializable object Overview
+
+@Serializable object MealDetails
+
+sealed class OverviewNavigationEvent {
+    data object OnBackPressed : OverviewNavigationEvent()
+
+    data object OnMealClicked : OverviewNavigationEvent()
 }

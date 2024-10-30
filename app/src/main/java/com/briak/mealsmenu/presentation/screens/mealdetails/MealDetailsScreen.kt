@@ -57,7 +57,7 @@ import com.briak.mealsmenu.domain.meals.MealModel
 import com.briak.mealsmenu.presentation.common.message.ErrorUiModel
 import com.briak.mealsmenu.presentation.components.ErrorEvents
 import com.briak.mealsmenu.presentation.components.ErrorFull
-import com.briak.mealsmenu.presentation.navigation.NavigationEvents
+import com.briak.mealsmenu.presentation.navigation.OverviewNavigationEvent
 import com.briak.mealsmenu.presentation.screens.mealdetails.ingredients.IngredientItem
 import com.briak.mealsmenu.presentation.screens.overview.meals.MealFullPreviewData
 import com.briak.mealsmenu.presentation.screens.overview.meals.MealUiModel
@@ -70,7 +70,7 @@ import org.koin.androidx.compose.koinViewModel
 fun MealDetailsScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    events: NavigationEvents,
+    navigationEvent: (OverviewNavigationEvent) -> Unit,
 ) {
     val viewModel = koinViewModel<MealDetailsViewModel>()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -110,7 +110,6 @@ fun MealDetailsScreen(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 24.dp)
                                     .sharedBounds(
                                         rememberSharedContentState(key = "title-${contentUiModel?.meal?.id ?: ""}"),
                                         animatedVisibilityScope = animatedVisibilityScope,
@@ -122,7 +121,7 @@ fun MealDetailsScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { events.back() }) {
+                    IconButton(onClick = { navigationEvent(OverviewNavigationEvent.OnBackPressed) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = "Arrow back",

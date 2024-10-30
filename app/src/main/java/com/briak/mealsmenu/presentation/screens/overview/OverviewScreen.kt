@@ -52,8 +52,7 @@ import com.briak.mealsmenu.domain.meals.MealModel
 import com.briak.mealsmenu.presentation.common.message.ErrorUiModel
 import com.briak.mealsmenu.presentation.components.ErrorEvents
 import com.briak.mealsmenu.presentation.components.ErrorFull
-import com.briak.mealsmenu.presentation.navigation.NavLink
-import com.briak.mealsmenu.presentation.navigation.NavigationEvents
+import com.briak.mealsmenu.presentation.navigation.OverviewNavigationEvent
 import com.briak.mealsmenu.presentation.screens.overview.categories.CategoryCard
 import com.briak.mealsmenu.presentation.screens.overview.categories.CategoryCardEvents
 import com.briak.mealsmenu.presentation.screens.overview.categories.CategoryCardPreviewData
@@ -70,7 +69,7 @@ import org.koin.androidx.compose.koinViewModel
 fun OverviewScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    events: NavigationEvents,
+    navigationEvent: (OverviewNavigationEvent) -> Unit,
 ) {
     val viewModel = koinViewModel<OverviewViewModel>()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -96,7 +95,7 @@ fun OverviewScreen(
 
                 override fun onMealCardClicked(uiModel: MealUiModel) {
                     viewModel.selectMeal(uiModel)
-                    events.navigate(NavLink.mealDetails())
+                    navigationEvent(OverviewNavigationEvent.OnMealClicked)
                 }
 
                 override fun onErrorReloadClicked() = viewModel.reload()
@@ -115,8 +114,7 @@ fun OverviewScreen(
                     Text(
                         modifier =
                             Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 24.dp),
+                                .fillMaxWidth(),
                         text = stringResource(id = R.string.OVERVIEW_SCREEN_TITLE),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
