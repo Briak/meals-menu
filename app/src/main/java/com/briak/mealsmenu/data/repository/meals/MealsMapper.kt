@@ -1,12 +1,15 @@
 package com.briak.mealsmenu.data.repository.meals
 
 import com.briak.mealsmenu.data.network.dto.MealDto
+import com.briak.mealsmenu.data.storage.entity.FavouriteMealEntity
 import com.briak.mealsmenu.domain.meals.IngredientModel
 import com.briak.mealsmenu.domain.meals.MealModel
 
 object MealsMapper {
-
-    fun mapMealFromDto(dto: MealDto): MealModel =
+    fun mapMealFromDto(
+        dto: MealDto,
+        favourite: Boolean,
+    ): MealModel =
         MealModel(
             id = dto.id,
             name = dto.name,
@@ -18,6 +21,7 @@ object MealsMapper {
             youtubeUrl = dto.youtubeUrl,
             sourceUrl = dto.sourceUrl,
             ingredients = mapIngredientsFromDto(dto),
+            favourite = favourite,
         )
 
     private fun mapIngredientsFromDto(dto: MealDto): List<IngredientModel> =
@@ -44,9 +48,25 @@ object MealsMapper {
             mapIngredientFromDto(dto.ingredient20, dto.measure20)?.let { add(it) }
         }
 
-    private fun mapIngredientFromDto(name: String?, measure: String?): IngredientModel? {
+    private fun mapIngredientFromDto(
+        name: String?,
+        measure: String?,
+    ): IngredientModel? {
         if (name == null) return null
         return IngredientModel(name, measure ?: "")
     }
 
+    fun mapMealFromEntity(entity: FavouriteMealEntity): MealModel =
+        MealModel(
+            id = entity.id,
+            name = entity.name,
+            iconUrl = entity.iconUrl,
+        )
+
+    fun mapEntityFromMeal(model: MealModel): FavouriteMealEntity =
+        FavouriteMealEntity(
+            id = model.id,
+            name = model.name,
+            iconUrl = model.iconUrl,
+        )
 }

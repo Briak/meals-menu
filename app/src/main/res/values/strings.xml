@@ -15,4 +15,7 @@
     <string name="GENERAL_ERROR_SERVER">A server error has occurred. $ERROR_MESSAGE$</string>
     <string name="GENERAL_RELOAD">Reload</string>
 
+    // Favourite meals screen
+    <string name="FAVOURITES_SCREEN_TITLE">Favourite meals</string>
+
 </resources>

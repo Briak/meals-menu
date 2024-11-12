@@ -46,5 +46,5 @@ sealed class OverviewNavigationEvent {
 // Favourites screens
 
 sealed class FavouritesNavigationEvent {
-    data object OnBackPressed : FavouritesNavigationEvent()
+    data object OnMealClicked : FavouritesNavigationEvent()
 }

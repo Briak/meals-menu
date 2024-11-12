@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.briak.mealsmenu.presentation.navigation.BottomScreens
+import com.briak.mealsmenu.presentation.navigation.FavouritesNavigationEvent
 import com.briak.mealsmenu.presentation.navigation.FavouritesScreens
 import com.briak.mealsmenu.presentation.navigation.MealDetails
 import com.briak.mealsmenu.presentation.navigation.NavigationAnim
@@ -130,7 +131,12 @@ class MainActivity : ComponentActivity() {
                     }
                     navigation<FavouritesScreens>(startDestination = BottomScreens.Favourites) {
                         composable<BottomScreens.Favourites> {
-                            FavouritesScreen()
+                            FavouritesScreen(
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedVisibilityScope = this@composable,
+                            ) {
+                                handleFavouritesNavigation(it, baseNavController)
+                            }
                         }
                     }
                 }
@@ -144,6 +150,16 @@ class MainActivity : ComponentActivity() {
     ) {
         when (event) {
             is OverviewNavigationEvent.OnMealClicked -> navController.navigate(MealDetails)
+            else -> navController.popBackStack()
+        }
+    }
+
+    private fun handleFavouritesNavigation(
+        event: FavouritesNavigationEvent,
+        navController: NavController,
+    ) {
+        when (event) {
+            is FavouritesNavigationEvent.OnMealClicked -> navController.navigate(MealDetails)
             else -> navController.popBackStack()
         }
     }

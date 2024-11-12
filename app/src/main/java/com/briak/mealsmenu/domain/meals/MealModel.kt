@@ -11,4 +11,5 @@ data class MealModel(
     val youtubeUrl: String? = null,
     val sourceUrl: String? = null,
     val ingredients: List<IngredientModel>? = null,
+    val favourite: Boolean = false,
 )

@@ -7,6 +7,12 @@ interface MealsRepository {
 
     suspend fun getDetails(mealId: String): MealModel
 
+    suspend fun addToFavourites(model: MealModel)
+
+    suspend fun removeFromFavourites(mealId: String)
+
+    fun observeFavourites(): Flow<List<MealModel>>
+
     suspend fun putCurrent(mealModel: MealModel)
 
     fun observeCurrent(): Flow<MealModel?>
